@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Summary and Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Light mode background */
+            color: #000; /* Light mode text color */
+            padding: 20px;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+        }
+        h1 {
+            color: #2e8b57;
+        }
+        .countdown {
+            font-size: 1.5em;
+            color: #d9534f;
+            margin-top: 20px;
+        }
+        #id-section {
+            margin-bottom: 20px;
+        }
+        #photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: none;
+            margin: 10px auto;
+        }
+        .edit-btn, .save-btn {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: transparent; /* Make background transparent */
+            color: #2e8b57; /* Text color */
+            border: 2px solid #2e8b57; /* Add a border for visibility */
+            padding: 8px 12px; /* Padding for a button-like appearance */
+            text-decoration: none; /* Remove underline */
+            font-size: 16px; /* Font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background-color: rgba(46, 139, 87, 0.1); /* Slight background on hover */
+        }
+        .mode-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: transparent; /* Transparent background */
+            color: #2e8b57; /* Text color */
+            border: 2px solid #2e8b57; /* Border */
+            padding: 8px 12px; /* Padding */
+            cursor: pointer;
+            border-radius: 5px; /* Rounded corners */
+        }
+        .mode-switch:hover {
+            background-color: rgba(46, 139, 87, 0.1); /* Slight background on hover */
+        }
+        .dark-mode {
+            background-color: #000; /* Black background for dark mode */
+            color: #fff; /* White text for dark mode */
+        }
+    </style>
+</head>
+<body onload="displayStudyTime(); startCountdown(); loadID(); applyMode();">
+
+<!-- Back Button -->
+<a href="index.html" class="back-btn">Back</a>
+
+<!-- Dark/Light Mode Switch -->
+<button class="mode-switch" onclick="toggleMode()">Switch to Dark Mode</button>
+
+<div id="id-section">
+    <input type="text" id="name-input" placeholder="Enter your name" class="hidden"/>
+    <input type="file" id="photo-input" accept="image/*" class="hidden"/>
+    <img id="photo-preview" alt="Photo Preview" />
+    <button class="edit-btn" onclick="editInfo()">Edit</button>
+    <button class="save-btn hidden" onclick="saveInfo()">Save</button>
+</div>
+
+<h1 id="greeting">HEY!!! </h1>
+<p>Total Time Studied: <span id="studyTime">0 hours</span></p>
+
+<h2>Time Left Until December 29, 2024</h2>
+<p class="countdown" id="countdownTimer"></p>
+
+<!-- Navigate Button -->
+<button class="navigate-btn" onclick="window.location.href='https://impraveen07.github.io/JeeTRACKER/'">Go to JeeTRACKER</button>
+
+<script>
+    // Dark and light mode toggle
+    function applyMode() {
+        const storedMode = localStorage.getItem('darkMode');
+        const isDarkMode = storedMode === 'true';
+
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.mode-switch').innerText = 'Switch to Light Mode';
+            document.querySelector('.back-btn').style.color = '#fff'; // Update button color
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.querySelector('.mode-switch').innerText = 'Switch to Dark Mode';
+            document.querySelector('.back-btn').style.color = '#2e8b57'; // Update button color
+        }
+    }
+
+    function toggleMode() {
+        const isDarkMode = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode); // Save the mode to localStorage
+        applyMode(); // Apply the mode changes
+    }
+
+    function displayStudyTime() {
+        const totalHours = localStorage.getItem("totalHours") || "0";
+        document.getElementById("studyTime").innerText = totalHours + " hours";
+    }
+
+    function startCountdown() {
+        const targetDate = new Date("December 29, 2024").getTime();
+
+        setInterval(() => {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById("countdownTimer").innerText = 
+                `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+        }, 1000);
+    }
+
+    function loadID() {
+        const savedName = localStorage.getItem("name");
+        const savedPhoto = localStorage.getItem("photo");
+
+        if (savedName) {
+            document.getElementById("name-input").value = savedName;
+            document.getElementById("greeting").innerText = "HEY!!! " + savedName; // Update greeting
+        }
+        if (savedPhoto) {
+            const photoPreview = document.getElementById("photo-preview");
+            photoPreview.src = savedPhoto;
+            photoPreview.style.display = "block";
+        }
+    }
+
+    function editInfo() {
+        document.getElementById("name-input").classList.remove('hidden');
+        document.getElementById("photo-input").classList.remove('hidden');
+        document.querySelector('.save-btn').classList.remove('hidden');
+    }
+
+    function saveInfo() {
+        const name = document.getElementById("name-input").value;
+        const photoInput = document.getElementById("photo-input");
+        const photoPreview = document.getElementById("photo-preview");
+
+        if (name) {
+            localStorage.setItem("name", name);
+            document.getElementById("greeting").innerText = "HEY!!! " + name; // Update greeting
+        }
+
+        if (photoInput.files.length > 0) {
+            const file = photoInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem("photo", e.target.result);
+                photoPreview.src = e.target.result;
+                photoPreview.style.display = "block"; // Show the preview
+            }
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById("name-input").classList.add('hidden');
+        document.getElementById("photo-input").classList.add('hidden');
+        document.querySelector('.save-btn').classList.add('hidden');
+    }
+</script>
+
+</body>
+</html>
