@@ -77,6 +77,10 @@
             background-color: #000; /* Black background for dark mode */
             color: #fff; /* White text for dark mode */
         }
+        .message {
+            color: #d9534f; /* Color for the message text */
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body onload="displayStudyTime(); startCountdown(); loadID(); applyMode();">
@@ -86,13 +90,15 @@
 
 <!-- Dark/Light Mode Switch -->
 <button class="mode-switch" onclick="toggleMode()">Switch to Dark Mode</button>
-
+&nbsp;&nbsp; &nbsp;&nbsp;
+<br><br>
 <div id="id-section">
     <input type="text" id="name-input" placeholder="Enter your name" class="hidden"/>
     <input type="file" id="photo-input" accept="image/*" class="hidden"/>
     <img id="photo-preview" alt="Photo Preview" />
     <button class="edit-btn" onclick="editInfo()">Edit</button>
     <button class="save-btn hidden" onclick="saveInfo()">Save</button>
+    <p id="no-image-message" class="message hidden">You can add your name and image.</p> <!-- Message when no image -->
 </div>
 
 <h1 id="greeting">HEY!!! </h1>
@@ -149,6 +155,7 @@
     function loadID() {
         const savedName = localStorage.getItem("name");
         const savedPhoto = localStorage.getItem("photo");
+        const noImageMessage = document.getElementById("no-image-message");
 
         if (savedName) {
             document.getElementById("name-input").value = savedName;
@@ -158,6 +165,9 @@
             const photoPreview = document.getElementById("photo-preview");
             photoPreview.src = savedPhoto;
             photoPreview.style.display = "block";
+            noImageMessage.classList.add('hidden'); // Hide message if image exists
+        } else {
+            noImageMessage.classList.remove('hidden'); // Show message if no image
         }
     }
 
@@ -171,6 +181,7 @@
         const name = document.getElementById("name-input").value;
         const photoInput = document.getElementById("photo-input");
         const photoPreview = document.getElementById("photo-preview");
+        const noImageMessage = document.getElementById("no-image-message");
 
         if (name) {
             localStorage.setItem("name", name);
@@ -184,6 +195,7 @@
                 localStorage.setItem("photo", e.target.result);
                 photoPreview.src = e.target.result;
                 photoPreview.style.display = "block"; // Show the preview
+                noImageMessage.classList.add('hidden'); // Hide message if image is added
             }
             reader.readAsDataURL(file);
         }
